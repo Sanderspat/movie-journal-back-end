@@ -1,5 +1,6 @@
 from app import db
 from flask import Blueprint, jsonify, request 
+from bson.objectid import ObjectId
 
 movies_bp = Blueprint("movies",__name__,url_prefix="/movies")
 
@@ -11,16 +12,40 @@ def post_movies():
 
     return jsonify('Added Movie'),201
 
-#READ-GET
-# @movies_bp.route("",methods=["GET"])
-# def get_movies():
-#     # movies = db.movies.find({'id':'1'})
+# READ-GET
+@movies_bp.route("/1",methods=["GET"])
+def get_movie():
 
-#     return jsonify(movies), 200
+    movie = db.movies.find_one({"_id":ObjectId("6201c8ab278a994a08504ab2")})
+    movie['_id'] = str(movie['_id'])
 
-#UPDATE-PUT
-@movies_bp.route("",methods=["PUT"])
-def put_movies():
-    movies = db.movies.update_one({'_id': 1},{'title': 'Con Air'})
+    print(movie)
+    return jsonify(movie), 200
 
-    return{}
+#FIND-ALL
+@movies_bp.route("",methods=["GET"])
+def get_movies():
+
+    movies = db.movies.find()
+    movies = list(movies)
+    movieList = []
+    for movie in movies:
+        movie['_id'] = str(movie['_id'])
+        movieList.append(movie)
+    
+    return jsonify(movieList),200
+
+#UPDATE-PUT-ONE
+@movies_bp.route("/edit",methods=["PUT"])
+def put_movie():
+    movie = db.movies.update_one({"_id":ObjectId("6201c8ab278a994a08504ab2")},{'title': 'Con Air'})
+    movie['_id'] = str(movie['_id'])
+
+    print(movie) 
+
+# #DELETE-DELETE_ONE
+# @movies_bp.route("",methods=["DELETE"])
+# def delete_movies():
+#     movies = db.movies.delete_one({'_id': moviesId})
+
+
